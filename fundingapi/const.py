@@ -1,0 +1,1 @@
+ETHEREUM_ADDRESS_RE = r'^0x[0-9abcdefABCDEF]{40}$'

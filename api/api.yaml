@@ -1,0 +1,86 @@
+swagger: '2.0'
+
+info:
+  title: Funding API
+  version: "0.0.1"
+  description: |
+    # The data serialization:
+    For JSON:
+      - Content-Type: application/json
+      - Accept: application/json
+
+
+host: fundingapi.dev.8gen.team
+schemes:
+  - http
+basePath: /api/
+
+
+securityDefinitions:
+  token:
+    type: apiKey
+    name: X-API-KEY
+    in: header
+    description: |
+      For any secured endpoints conforming clients SHOULD use a HTTP header `X-API-KEY`.
+      Client SHOULD keep `X-API-KEY` in local data storage.
+      Example header: `X-API-KEY: WU1tQSo/R3RhLndgSHMvLiNONX55MWZAOW8hLUc+cUM=`.
+
+produces:
+  - application/json
+consumes:
+  - application/json
+  - multipart/form-data
+
+parameters:
+  userAgent:
+    name: User-Agent
+    default: 'MIPS/0.0.1'
+    description: |
+      Example: `User-Agent: MIPS/0.0.1`,
+      where is:
+      - `MIPS` — type platform
+      - `0.0.1` — application version
+    type: string
+    in: header
+    required: true
+
+
+paths:
+  /create_pair/{address}:
+    parameters:
+      - $ref: '#/parameters/userAgent'
+    get:
+      tags:
+        - Generate
+      security:
+        - token: []
+      summary: get temporary ethereum address
+      responses:
+        200:
+          description: 'Return status'
+          schema:
+            $ref: '#/definitions/createPairResponse'
+        400:
+          description: 'Bad format'
+        401:
+          description: 'Unauthorized, wrong X-API-KEY'
+        500:
+          description: 'Internal server error'
+
+
+definitions:
+  createPairResponse:
+    type: object
+    required: ['address', 'id']
+    properties:
+      address:
+        type: string
+        pattern: ^0x[0-9abcdefABCDEF]{40}$
+        description: 'Etherium address'
+        example: 0xe20df59ecc01ee28e3e794d64f37c6961bae495c
+      id:
+        type: string
+        format: uuid
+        description: 'Pair ID'
+        example: d4171a66-af9f-493b-a4d7-dec0fc0c9e85

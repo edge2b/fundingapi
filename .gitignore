@@ -99,3 +99,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+api/node_modules/
+api/package-lock.json
+api/swagger-editor/
+*.sublime-*
