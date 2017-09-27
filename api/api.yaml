@@ -2,7 +2,7 @@ swagger: '2.0'
 
 info:
   title: Funding API
-  version: "0.0.1"
+  version: "0.0.2"
   description: |
     # The data serialization:
     For JSON:
@@ -45,11 +45,18 @@ parameters:
     in: header
     required: true
 
+  address:
+    name: address
+    type: string
+    pattern: ^0x[0-9abcdefABCDEF]{40}$
+    in: path
+    required: true
 
 paths:
   /create_pair/{address}:
     parameters:
       - $ref: '#/parameters/userAgent'
+      - $ref: '#/parameters/address'
     get:
       tags:
         - Generate
@@ -78,7 +85,7 @@ definitions:
         type: string
         pattern: ^0x[0-9abcdefABCDEF]{40}$
         description: 'Etherium address'
-        example: 0xe20df59ecc01ee28e3e794d64f37c6961bae495c
+        example: '0xe20df59ecc01ee28e3e794d64f37c6961bae495c'
       id:
         type: string
         format: uuid
