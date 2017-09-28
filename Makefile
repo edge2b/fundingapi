@@ -8,6 +8,9 @@ gen-schema:
 test: venv
 	venv/bin/pytest -s -v --flake8
 
+tarantool:
+	mkdir -p data && cd data && ../scripts/tarantool.lua
+
 venv:
 	virtualenv --python=python3 venv
 	venv/bin/pip install -r requirements.txt
