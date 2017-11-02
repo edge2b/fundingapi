@@ -38,7 +38,8 @@ async def process_mapping(env: AttrDict, mapping: dict):
         'value': balance - gas * gas_price,
         'gas': gas,
         'gasPrice': gas_price,
-        'data': '0xec8ac4d8000000000000000000000000{0:040x}'.format(int(mapping['client_address'], 16)),
+        #  buyTokens(address contributor) -> 0xec8ac4d8 + uint256 address
+        'data': '0xec8ac4d8{0:064x}'.format(int(mapping['client_address'], 16)),
         'chainId': chain_id,
         'nonce': 0,
     }

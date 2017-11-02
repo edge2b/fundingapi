@@ -2,7 +2,7 @@ swagger: '2.0'
 
 info:
   title: Funding API
-  version: "0.0.2"
+  version: "0.1.0"
   description: |
     # The data serialization:
     For JSON:
@@ -53,7 +53,7 @@ parameters:
     required: true
 
 paths:
-  /create_pair}:
+  /create_pair:
     parameters:
       - $ref: '#/parameters/userAgent'
     post:
