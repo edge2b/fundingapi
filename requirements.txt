@@ -43,10 +43,10 @@ six==1.11.0
 toolz==0.8.2
 trafaret==0.12.0
 git+https://github.com/8gen/trafaret_schema
+git+https://github.com/pipermerriam/web3.py
 trafaret-schema==0.1.1
 traitlets==4.3.2
 urllib3==1.22
 wcwidth==0.1.7
-web3==3.15.0
 yarl==0.12.0
 asynctnt==0.1.8

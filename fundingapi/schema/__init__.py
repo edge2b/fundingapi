@@ -21,14 +21,6 @@ register.reg_format('uuid', just(check_uuid))
 for (name, schema) in jsonschema.items():
     rule = json_schema(dict(schema), context=register)
     globals()[name] = rule
-    # import ipdb
-    # ipdb.set_trace()
-    # schema['title'] = 'Class'
-    # builder = pjs.ObjectBuilder(schema)
-    # ns = builder.build_classes(strict=True)
-    # if 'properties' in schema:
-    #     ns.Class.__keys__ = schema['properties'].keys()
-    # globals()[name] = ns.Class
 
 
 def validate(schema: abc.ABC) -> callable:
@@ -36,17 +28,15 @@ def validate(schema: abc.ABC) -> callable:
         async def decor(request: web.Request) -> web.Response:
             text = await request.text()
             try:
+                data = json.loads(text)
+            except json.JSONDecodeError:
+                return web.json_response({'error': 'Wrong json format'}, status=400)
+
+            if isinstance(data, dict):
                 try:
-                    data = json.loads(text)
-                except json.JSONDecodeError:
-                    raise pjs.validators.ValidationError('Wrong json format')
-                if isinstance(data, dict):
-                    inst = schema(**data)
-                    inst.validate()
-                else:
-                    raise pjs.validators.ValidationError('Wrong data structure, should be a dict')
-            except pjs.validators.ValidationError as e:
-                return web.json_response({'error': str(e)}, status=400)
-            return await fn(inst.as_dict())
+                    data = schema(data)
+                except t.dataerror.DataError as e:
+                    return web.json_response({'error': e.error[0].as_dict()}, status=400)
+            return await fn(request, data)
         return decor
     return wrap

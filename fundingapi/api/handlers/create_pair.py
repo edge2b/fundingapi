@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
-import re
+import logging
 
 from aiohttp import web
 
-from fundingapi import const
 from fundingapi.utils import generate_key_pair
+from fundingapi.utils import is_address_valid
 
-is_address_valid = re.compile(const.ETHEREUM_ADDRESS_RE).match
-# from ...schema import updateRequest
-# from ...schema import validate
+from ...schema import createPairRequest
+from ...schema import validate
+
+logger = logging.getLogger(__name__)
 
 
-# @validate(updateRequest)
-async def handler(data):
-    env = data.app['env']
-    address = data.match_info['address']
-    api_key = data.headers.get('X-API-KEY')
+@validate(createPairRequest)
+async def handler(request, data):
+    env = request.app['env']
+    address = data['address']
+    expired_at = data['expired_at']
+    api_key = request.headers.get('X-API-KEY')
     if not api_key:
         return web.json_response({'error': 'Need API Key'}, status=400)
 
@@ -23,10 +25,11 @@ async def handler(data):
         return web.json_response({'error': 'Not valid address'}, status=400)
 
     inst = generate_key_pair()
-    result = await env.tnt.call('register_client', [api_key, address, inst['private'], inst['address']])
+    payload = [api_key, address, inst['private'], inst['address'], int(expired_at)]
+    result = await env.tnt.call('register_client', payload)
     if not result.body:
         return web.json_response({'error': 'Not valid or not active API Key'}, status=400)
 
     result = result.body[0]
-
+    logger.info(f"Register mapping {address} -> {inst['address']} for {api_key}")
     return web.json_response({'id': result['uuid'], 'address': inst['address']})

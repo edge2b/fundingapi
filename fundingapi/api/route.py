@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 def make_app(env: AttrDict) -> web.Application:
     app = web.Application()
     app['env'] = env
-    app.router.add_route('GET', '/api/create_pair/{address:\w+}', handler_create_pair)
+    app.router.add_route('POST', '/api/create_pair', handler_create_pair)
     return app
 
 

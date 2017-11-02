@@ -6,12 +6,12 @@ import click
 import yaml
 
 from .commands import api_group
-# from commands.workers import workers_group
+from .commands import workers_group
 
 logger = logging.getLogger(__name__)
 
 
-@click.command(cls=click.CommandCollection, sources=[api_group])  # type: ignore
+@click.command(cls=click.CommandCollection, sources=[workers_group, api_group])  # type: ignore
 @click.option('--debug', is_flag=True, default=False)
 @click.option('--config',
               type=click.Path(readable=True, exists=True, dir_okay=False, resolve_path=True),
