@@ -8,3 +8,6 @@ tnt:
 
 provider:
   ropsten: https://ropsten.infura.io:443/Hn1kZjKCMl14LtX3tfIy
+  kovan: https://ropsten.infura.io:443/Hn1kZjKCMl14LtX3tfIy
+  rinkeby: https://ropsten.infura.io:443/Hn1kZjKCMl14LtX3tfIy
+  mainnet: https://mainnet.infura.io:443/Hn1kZjKCMl14LtX3tfIy
