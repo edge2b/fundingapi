@@ -89,7 +89,7 @@ definitions:
       address:
         type: string
         pattern: ^0x[0-9abcdefABCDEF]{40}$
-        description: 'Etherium address'
+        description: 'Ethereum address'
         example: '0xe20df59ecc01ee28e3e794d64f37c6961bae495c'
       id:
         type: string
@@ -108,5 +108,5 @@ definitions:
       address:
         type: string
         pattern: ^0x[0-9abcdefABCDEF]{40}$
-        description: 'Etherium address'
+        description: 'Ethereum address'
         example: '0xe20df59ecc01ee28e3e794d64f37c6961bae495c'
