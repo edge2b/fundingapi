@@ -80,6 +80,34 @@ paths:
         500:
           description: 'Internal server error'
 
+  /create_account:
+    parameters:
+      - $ref: '#/parameters/userAgent'
+    post:
+      tags:
+        - Generate
+      security:
+        - token: []
+      summary: register account
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/registerRequest'
+      responses:
+        200:
+          description: 'Return status'
+          schema:
+            $ref: '#/definitions/registerResponse'
+        400:
+          description: 'Bad format'
+        401:
+          description: 'Unauthorized, wrong X-API-KEY'
+        500:
+          description: 'Internal server error'
+
+
 
 definitions:
   createPairResponse:
@@ -110,3 +138,33 @@ definitions:
         pattern: ^0x[0-9abcdefABCDEF]{40}$
         description: 'Ethereum address'
         example: '0xe20df59ecc01ee28e3e794d64f37c6961bae495c'
+
+  registerRequest:
+    type: object
+    required: ['name', 'email', 'address']
+    properties:
+      address:
+        type: string
+        pattern: ^0x[0-9abcdefABCDEF]{40}$
+        description: 'Ethereum address'
+        example: '0xe20df59ecc01ee28e3e794d64f37c6961bae495c'
+      email:
+        type: string
+        format: email
+        description: 'User mail'
+        example: 'me@daedalus.ru'
+      name:
+        type: string
+        pattern: ^(.+){4,}$
+        description: 'User Fullname'
+        example: 'Nick Smith'
+
+  registerResponse:
+    type: object
+    required: ['id']
+    properties:
+      id:
+        type: string
+        format: uuid
+        description: 'Pair ID'
+        example: d4171a66-af9f-493b-a4d7-dec0fc0c9e85

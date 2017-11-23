@@ -7,6 +7,7 @@ from aiohttp import web
 import asynctnt
 from attrdict import AttrDict
 
+from .handlers import handler_create_account
 from .handlers import handler_create_pair
 
 logger = logging.getLogger(__name__)
@@ -16,6 +17,7 @@ def make_app(env: AttrDict) -> web.Application:
     app = web.Application()
     app['env'] = env
     app.router.add_route('POST', '/api/create_pair', handler_create_pair)
+    app.router.add_route('POST', '/api/create_account', handler_create_account)
     return app
 
 
