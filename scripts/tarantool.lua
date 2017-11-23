@@ -1,7 +1,4 @@
 #!/usr/bin/env tarantool
-package.path = package.path .. ';/usr/local/lua/tarantool-queue/?.lua'
-package.path = package.path .. ';/usr/local/share/lua/5.2/queue/?.lua'
-
 uuid = require('uuid');
 
 box.cfg {
