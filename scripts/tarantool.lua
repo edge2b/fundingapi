@@ -53,7 +53,7 @@ box.once("db_version:0.1", function()
     local account_space = box.schema.create_space('account')
     account_space:create_index('primary',  {type = 'tree', parts = {1, 'unsigned'}})
     account_space:create_index('uuid',     {type = 'hash', parts = {3, 'str'}})
-    account_space:create_index('address',  {type = 'tree', unique = true, parts = {4, 'str'}})
+    account_space:create_index('address',  {type = 'tree', unique = false, parts = {4, 'str'}})
     account_space:create_index('email',    {type = 'tree', unique = true, parts = {5, 'str'}})
     account_space:format({
         {name='id',     type='unsigned'},
@@ -65,6 +65,11 @@ box.once("db_version:0.1", function()
         {name='created_at',  type='unsigned'},
         {name='active', type='bool'},
     })
+end)
+
+
+box.once("db_version:0.2", function ()
+    box.space.account.index.address:alter({type = 'tree', unique = false, parts = {4, 'str'}})
 end)
 
 
