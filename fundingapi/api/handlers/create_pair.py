@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import time
 
 from aiohttp import web
 
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 async def handler(request, data):
     env = request.app['env']
     address = data['address']
-    expired_at = data['expired_at']
+    expired_at = int(time.time()) + 86400
     api_key = request.headers.get('X-API-KEY')
     if not api_key:
         return web.json_response({'error': 'Need API Key'}, status=400)
