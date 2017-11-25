@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 async def process_mapping(env: AttrDict, mapping: dict):
-    network_name = mapping['resource']['network_name']
+    network_name = mapping['resource']['network_type']
     provider = env.provider[network_name]
     endpoint = env.cfg['provider'][network_name]
     balance = await provider.eth_getBalance(mapping['funding_address'])
