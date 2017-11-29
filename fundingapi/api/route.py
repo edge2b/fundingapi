@@ -18,8 +18,7 @@ def make_app(env: AttrDict) -> web.Application:
     app['env'] = env
     app.router.add_route('POST', '/api/create_pair', handler_create_pair)
     app.router.add_route('POST', '/api/create_account', handler_create_account)
-    # @todo: implement statistics fetcher handler
-    # @todo: implement api statistics
+    # @todo implement statistics fetcher handler
     return app
 
 
