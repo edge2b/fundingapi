@@ -1,7 +1,8 @@
-import logging, asyncio
+import asyncio
+import logging
+from functools import partial
 
 from attrdict import AttrDict
-from functools import partial
 from web3 import HTTPProvider
 from web3 import Web3
 
@@ -16,7 +17,10 @@ async def process_mapping(env: AttrDict, mapping: dict):
     w3 = Web3([HTTPProvider(endpoint)])
 
     if balance < 1e17:  # TODO: config
-        logger.debug(f"Process mapping {mapping['uuid']}, not enough ETH ({balance/1e18}) on {mapping['funding_address']}")
+        logger.debug(
+            f"Process mapping {mapping['uuid']}, not enough ETH "
+            f"({balance/1e18}) on {mapping['funding_address']}"
+        )
         await env.tnt.call('update_recheck', [mapping['uuid'], 30])
         return
 
@@ -46,7 +50,8 @@ async def process_mapping(env: AttrDict, mapping: dict):
     signed = w3.eth.account.signTransaction(transaction, mapping['private_key'])
     tx_id = await provider.eth_sendRawTransaction(signed.rawTransaction.hex())
     await env.tnt.call('assign_tx_id', [mapping['uuid'], tx_id])
-    logger.debug(f"Process mapping {mapping['uuid']}, send {transaction['value']/1e18} ETH to contract {transaction['to']} -> {tx_id}")
+    logger.debug(f"Process mapping {mapping['uuid']}, "
+                 f"send {transaction['value']/1e18} ETH to contract {transaction['to']} -> {tx_id}")
 
 
 async def schedule_balance_checker(env: AttrDict):
@@ -55,4 +60,3 @@ async def schedule_balance_checker(env: AttrDict):
     if len(mappings) == 0:
         return
     await asyncio.wait(map(partial(process_mapping, env), mappings))
-
