@@ -2,7 +2,7 @@ swagger: '2.0'
 
 info:
   title: Funding API
-  version: "0.1.0"
+  version: "0.2.0"
   description: |
     # The data serialization:
     For JSON:
@@ -17,7 +17,7 @@ basePath: /api/
 
 
 securityDefinitions:
-  token:
+  api_key:
     type: apiKey
     name: X-API-KEY
     in: header
@@ -25,6 +25,13 @@ securityDefinitions:
       For any secured endpoints conforming clients SHOULD use a HTTP header `X-API-KEY`.
       Client SHOULD keep `X-API-KEY` in local data storage.
       Example header: `X-API-KEY: WU1tQSo/R3RhLndgSHMvLiNONX55MWZAOW8hLUc+cUM=`.
+
+  session_token:
+    type: apiKey
+    in: header
+    name: Authorization
+    description: |
+      Example header: `Authorization: Bearer WU1tQSo/R3RhLndgSHMvLiNONX55MWZAOW8hLUc+cUM=`.
 
 produces:
   - application/json
@@ -35,11 +42,11 @@ consumes:
 parameters:
   userAgent:
     name: User-Agent
-    default: 'MIPS/0.0.1'
+    default: 'dApp/0.0.1'
     description: |
-      Example: `User-Agent: MIPS/0.0.1`,
+      Example: `User-Agent: Yandex.Browser/0.0.1`,
       where is:
-      - `MIPS` — type platform
+      - `dApp` — type platform
       - `0.0.1` — application version
     type: string
     in: header
@@ -60,7 +67,8 @@ paths:
       tags:
         - Generate
       security:
-        - token: []
+        - api_key: []
+        - session_token: []
       summary: get temporary ethereum address
       parameters:
         - in: body
@@ -80,14 +88,14 @@ paths:
         500:
           description: 'Internal server error'
 
-  /create_account:
+  /account/register:
     parameters:
       - $ref: '#/parameters/userAgent'
     post:
       tags:
         - Generate
       security:
-        - token: []
+        - api_key: []
       summary: register account
       parameters:
         - in: body
@@ -99,7 +107,125 @@ paths:
         200:
           description: 'Return status'
           schema:
-            $ref: '#/definitions/registerResponse'
+            $ref: '#/definitions/authResponse'
+        400:
+          description: 'Bad format'
+        401:
+          description: 'Unauthorized, wrong X-API-KEY'
+        500:
+          description: 'Internal server error'
+
+  /account/oauth2:
+    parameters:
+      - $ref: '#/parameters/userAgent'
+    post:
+      tags:
+        - Generate
+      security:
+        - api_key: []
+      summary: sign in or sign up using oauth2 provider
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/oauth2Request'
+      responses:
+        200:
+          description: 'Return status'
+          schema:
+            $ref: '#/definitions/authResponse'
+        400:
+          description: 'Bad format'
+        401:
+          description: 'Unauthorized, wrong X-API-KEY'
+        500:
+          description: 'Internal server error'
+
+  /account/session:
+    parameters:
+      - $ref: '#/parameters/userAgent'
+    get:
+      tags:
+        - Generate
+      security:
+        - api_key: []
+        - session_token: []
+      summary: check session
+      responses:
+        200:
+          description: 'Return status'
+          schema:
+            $ref: '#/definitions/authResponse'
+        400:
+          description: 'Bad format'
+        401:
+          description: 'Unauthorized, wrong X-API-KEY'
+        500:
+          description: 'Internal server error'
+    post:
+      tags:
+        - Generate
+      security:
+        - api_key: []
+      summary: perform authorization account
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/authRequest'
+      responses:
+        200:
+          description: 'Return status'
+          schema:
+            $ref: '#/definitions/authResponse'
+        400:
+          description: 'Bad format'
+        401:
+          description: 'Unauthorized, wrong X-API-KEY'
+        500:
+          description: 'Internal server error'
+
+  /account/profile:
+    parameters:
+      - $ref: '#/parameters/userAgent'
+    get:
+      tags:
+        - Generate
+      security:
+        - api_key: []
+        - session_token: []
+      summary: fetch profile
+      responses:
+        200:
+          description: 'Return status'
+          schema:
+            $ref: '#/definitions/responseProfile'
+        400:
+          description: 'Bad format'
+        401:
+          description: 'Unauthorized, wrong X-API-KEY'
+        500:
+          description: 'Internal server error'
+    put:
+      tags:
+        - Generate
+      security:
+        - api_key: []
+        - session_token: []
+      summary: update profile
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/updateProfile'
+      responses:
+        200:
+          description: 'Return status'
+          schema:
+            $ref: '#/definitions/responseProfile'
         400:
           description: 'Bad format'
         401:
@@ -137,30 +263,123 @@ definitions:
 
   registerRequest:
     type: object
-    required: ['name', 'email', 'address']
+    required: ['email', 'recaptcha_token']
     properties:
-      address:
-        type: string
-        pattern: ^0x[0-9abcdefABCDEF]{40}$
-        description: 'Ethereum address'
-        example: '0xe20df59ecc01ee28e3e794d64f37c6961bae495c'
       email:
         type: string
         format: email
         description: 'User mail'
         example: 'me@daedalus.ru'
-      name:
+      recaptcha_token:
         type: string
-        pattern: ^(.+){4,}$
-        description: 'User Fullname'
-        example: 'Nick Smith'
+        description: 'reCAPTCHA v2 Token'
+        example: '…'
 
-  registerResponse:
+  authRequest:
+    type: object
+    required: ['email', 'recaptcha_toke', 'password']
+    properties:
+      email:
+        type: string
+        format: email
+        description: 'User mail'
+        example: 'me@daedalus.ru'
+      password:
+        type: string
+        description: 'User password'
+        example: '…'
+      recaptcha_token:
+        type: string
+        description: 'reCAPTCHA v2 Token'
+        example: '…'
+
+  authResponse:
     type: object
     required: ['id']
     properties:
       id:
         type: string
         format: uuid
-        description: 'Pair ID'
+        description: 'User ID'
         example: d4171a66-af9f-493b-a4d7-dec0fc0c9e85
+      session_token:
+        type: string
+        description: 'Session token'
+        example: "088KKvS57Gk4eUw2Kf/fmCJsWoCwZGZavj0LGYk7iCXo/Whu2yxObQ1Bb2gJdnG"
+
+  oauth2Request:
+    type: object
+    required: ['code', 'provider']
+    properties:
+      code:
+        type: string
+        description: 'OAuth2 code'
+        example: '…'
+      provider:
+        type: string
+        enum:
+          - 'fb'
+        description: 'OAuth2 Provider'
+        example: '…'
+
+  updateProfile:
+    type: object
+    required: ['name', 'age', 'gender', 'location']
+    properties:
+      name:
+        type: string
+        description: Full name
+        example: 'Nikita Kuznetsov'
+      age:
+        type: number
+        minimum: 14
+        maximum: 255
+        description: How old are you?
+        example: '35'
+      gender:
+        type: string
+        description: Your sex
+        example: boy
+        enum:
+          - "girl"
+          - "boy"
+          - "unknown"
+      location:
+        type: string
+        example: 01
+        description: Where are you from?
+
+  responseProfile:
+    type: object
+    required: ['name', 'age', 'gender', 'location', 'gravatar']
+    properties:
+      name:
+        type: string
+        description: Full name
+        example: 'Nikita Kuznetsov'
+      age:
+        type: number
+        minimum: 14
+        maximum: 255
+        description: How old are you?
+        example: '35'
+      gender:
+        type: string
+        description: Your sex
+        example: boy
+        enum:
+          - "girl"
+          - "boy"
+          - "unknown"
+      location:
+        type: string
+        example: 01
+        description: Where are you from?
+      gravatar:
+        type: string
+        example: http://www.gravatar.com/avatar/eab2d80a66bc03c0efe41232b39035bd.jpg
+        description: URL for Gravatar
+
+
+
+
