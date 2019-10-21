@@ -9,7 +9,7 @@ click==6.7
 coverage==4.4.1
 cytoolz==0.8.2
 decorator==4.1.2
-ecdsa==0.13
+ecdsa==0.13.3
 ethereum-abi-utils==0.4.3
 ethereum-utils==0.4.1
 hypothesis==3.21.0
