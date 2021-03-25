@@ -35,7 +35,7 @@ pylru==1.0.9
 pysha3==1.0.2
 pytest==3.2.2
 python-jsonschema-objects==0.2.2
-PyYAML==3.12
+PyYAML==5.4
 requests==2.18.4
 rlp==0.6.0
 simplegeneric==0.8.1
